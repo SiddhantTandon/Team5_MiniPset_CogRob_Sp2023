@@ -19,3 +19,8 @@ def temporal_cohesion_sol(batch):
 def temporal_loss_gradient(init_state, next_state):
     state_diff = next_state - init_state
     return np.sum(state_diff)*2
+
+
+
+##TODO: write up the data set data structure as well as
+
