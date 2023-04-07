@@ -2,7 +2,7 @@ import numpy as np
 
 class Data_Frame:
 
-    def __init__(self, coords, action, reward):
+    def __init__(self, coords, action, reward, image):
         """
         Initialize a data frame
         :param coords: a numpy array of the coordinates of the robot
@@ -12,8 +12,9 @@ class Data_Frame:
         self.coords = coords
         self.action = action
         self.reward = reward
+        self.image = image
 
-def temporal_cohesion_sol(batch):
+def temporal_cohesion_sol(batch, mapping):
     """
     computes the gradient of the temporal cohesion loss on the given batch of state representation
     :param batch: a list of Data frames where batch[i] is the data frame from time step i
@@ -21,16 +22,25 @@ def temporal_cohesion_sol(batch):
     """
 
     time_steps = batch.size()[0]
-    total_loss_grad = 0
+    total_loss_grad = np.zeros(mapping.size)
     for i in range(0,time_steps-1):
-        loss_grad = temporal_loss_gradient(batch[i].coords, batch[i+1].coords)
+        loss_grad = temporal_loss_gradient(batch[i].coords, batch[i+1].coords, mapping)
         total_loss_grad += loss_grad
 
     return total_loss_grad/time_steps
 
-def temporal_loss_gradient(init_state, next_state):
-    state_diff = next_state - init_state
-    return np.sum(state_diff)*2
+def temporal_loss_gradient(init_state, next_state, mapping):
+    dims = mapping.size
+    output = np.zeros(dims)
+    for i in range(0, dims[0]):
+        outside_comp = mapping[i,:]*init_state.image - mapping[i,:]*next_state.image
+        for j in range(0, dims[1]):
+            output[i,j] = 2*outside_comp*(init_state.image[j] - next_state.image[j])
+    return output
+
+
+frame1 = Data_Frame(np.array([1,2]), "right", 0)
+frame2 = Data_Frame(np.array([2,2]), "right", 0)
 
 
 
