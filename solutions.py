@@ -39,22 +39,13 @@ def temporal_loss_gradient(init_state, next_state, mapping):
             output[i,j] = 2*outside_comp*(init_state.image[j] - next_state.image[j])
     return output
 
-image1 = np.array([0,1,1,1]).T #(0,0)
-image2 = np.array([1,0,1,1]).T #(1,0)
-image3 = np.array([1,1,0,1]).T #(0,0)
-image4 = np.array([1,1,1,0.1]).T #(1,0)
-frame1 = Data_Frame(np.array([1,2]), 4, 1, image1)
-frame2 = Data_Frame(np.array([2,3]), 4, 2, image2)
-frame3 = Data_Frame(np.array([2,1]), 4, 1, image3)
-frame4 = Data_Frame(np.array([2,4]), 4, 2, image4)
-mapping = np.arange(8).reshape((2,4))
 
-print(temporal_cohesion_sol([frame1,frame2], mapping))
+
 
 
 ##TODO: write up the data set data structure as well as
 
-def proportionality_prior_sol(batch):
+def proportionality_prior_sol(batch, mapping):
     """
     computes the gradient proportionality prior from the batch
     :param batch: a list of Data frames where batch[i] is the data frame from time step i
@@ -64,7 +55,15 @@ def proportionality_prior_sol(batch):
     We want the gradient of this
     """
 
-    #TODO: fill this out to find times with matching actions
+    time_steps = len(batch)
+    total_loss_grad = np.zeros(mapping.shape)
+    for i in range(0, time_steps - 1):
+        for j in range(i+1,time_steps - 1):
+            if batch[i].action == batch[j].action:
+                loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image, batch[j+1].image, mapping)
+                total_loss_grad += loss_grad.reshape(2, 4)
+
+    return total_loss_grad / (time_steps - 1)
 
 
 def proportional_loss_gradient(s1, s2, s3, s4, mapping):
@@ -85,7 +84,6 @@ def proportional_loss_gradient(s1, s2, s3, s4, mapping):
 
     return output
 
-print(proportional_loss_gradient(frame1.image, frame2.image, frame3.image, frame4.image, mapping))
 
 def causality_prior_sol(batch):
     """
@@ -98,7 +96,16 @@ def causality_prior_sol(batch):
     We want the gradient of this
     """
 
-    #TODO: fill this out to find times with matching actions
+    time_steps = len(batch)
+    total_loss_grad = np.zeros(mapping.shape)
+    for i in range(0, time_steps - 1):
+        for j in range(i + 1, time_steps - 1):
+            if batch[i].action == batch[j].action and batch[i].reward != batch[j].reward:
+                loss_grad = causal_loss_gradient(batch[i].image, batch[j].image,
+                                                mapping)
+                total_loss_grad += loss_grad.reshape(2, 4)
+
+    return total_loss_grad / (time_steps - 1)
 
 def causal_loss_gradient(s1,s2,mapping):
     dims = mapping.shape
@@ -113,12 +120,21 @@ def causal_loss_gradient(s1,s2,mapping):
             output[i,j] = -numer/denom
     return output
 
-print(causal_loss_gradient(frame1.image, frame3.image, mapping))
+def repeatability_prior_sol(batch, mapping):
+    time_steps = len(batch)
+    total_loss_grad = np.zeros(mapping.shape)
+    for i in range(0, time_steps - 1):
+        for j in range(i + 1, time_steps - 1):
+            if batch[i].action == batch[j].action:
+                loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image,
+                                                       batch[j + 1].image, mapping)
+                total_loss_grad += loss_grad.reshape(2, 4)
+
+    return total_loss_grad / (time_steps - 1)
 
 
-def repeatability_prior_sol(s1, s2, s3, s4, mapping):
+def repeatability_loss_gradient(s1, s2, s3, s4, mapping):
     """
-    TODO: FOR JAKE
     :param batch:
     :return:
     """
@@ -138,4 +154,13 @@ def repeatability_prior_sol(s1, s2, s3, s4, mapping):
             output[i,j] = 2*inner*outer*base_causal_loss + causal_losses[i,j]*base_priorish_loss
     return output
 
-print(repeatability_prior_sol(frame1.image, frame2.image, frame3.image, frame4.image, mapping))
+if __name__ == "__main__":
+    image1 = np.array([0, 1, 1, 1]).T  # (0,0)
+    image2 = np.array([1, 0, 1, 1]).T  # (1,0)
+    image3 = np.array([1, 1, 0, 1]).T  # (0,0)
+    image4 = np.array([1, 1, 1, 0.1]).T  # (1,0)
+    frame1 = Data_Frame(np.array([1, 2]), 4, 1, image1)
+    frame2 = Data_Frame(np.array([2, 3]), 4, 2, image2)
+    frame3 = Data_Frame(np.array([2, 1]), 4, 1, image3)
+    frame4 = Data_Frame(np.array([2, 4]), 4, 2, image4)
+    mapping = np.arange(8).reshape((2, 4))
