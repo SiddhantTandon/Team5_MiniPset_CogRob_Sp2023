@@ -44,13 +44,15 @@ def proportionality_prior_sol(batch, mapping):
 
     time_steps = len(batch)
     total_loss_grad = np.zeros(mapping.shape)
+    pairings = 0
     for i in range(0, time_steps - 1):
         for j in range(i+1,time_steps - 1):
             if batch[i].action == batch[j].action:
+                pairings += 1
                 loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image, batch[j+1].image, mapping)
                 total_loss_grad += loss_grad.reshape(mapping.shape)
 
-    return total_loss_grad / (time_steps - 1)
+    return total_loss_grad / pairings
 
 
 def proportional_loss_gradient(s1, s2, s3, s4, mapping):
@@ -85,14 +87,17 @@ def causality_prior_sol(batch):
 
     time_steps = len(batch)
     total_loss_grad = np.zeros(mapping.shape)
+    pairings = 0
     for i in range(0, time_steps - 1):
+
         for j in range(i + 1, time_steps - 1):
+            pairings += 1
             if batch[i].action == batch[j].action and batch[i].reward != batch[j].reward:
                 loss_grad = causal_loss_gradient(batch[i].image, batch[j].image,
                                                 mapping)
                 total_loss_grad += loss_grad.reshape(mapping.shape)
 
-    return total_loss_grad / (time_steps - 1)
+    return total_loss_grad / pairings
 
 def causal_loss_gradient(s1,s2,mapping):
     dims = mapping.shape
@@ -110,14 +115,16 @@ def causal_loss_gradient(s1,s2,mapping):
 def repeatability_prior_sol(batch, mapping):
     time_steps = len(batch)
     total_loss_grad = np.zeros(mapping.shape)
+    pairings = 0
     for i in range(0, time_steps - 1):
         for j in range(i + 1, time_steps - 1):
             if batch[i].action == batch[j].action:
+                pairings += 1
                 loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image,
                                                        batch[j + 1].image, mapping)
                 total_loss_grad += loss_grad.reshape(mapping.shape)
 
-    return total_loss_grad / (time_steps - 1)
+    return total_loss_grad / pairings
 
 
 def repeatability_loss_gradient(s1, s2, s3, s4, mapping):
