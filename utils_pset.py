@@ -18,6 +18,17 @@ class Data_Frame:
         self.reward = reward
         self.image = image
 
+def raw_to_frame(images, coords, actions, rewards):
+    time_steps = images.shape[0]-1
+    frames = []
+
+    for i in range(0,time_steps):
+        frame = Data_Frame(coords[i,:],
+                           actions[i],
+                           rewards[i],
+                           images[i,:])
+        frames.append(frame)
+    return frames
 
 class Ground_truth():
     '''
@@ -28,7 +39,7 @@ class Ground_truth():
     4. Reward recieved to get to this state
     '''
     
-    def run_program(N=25):
+    def run_program(self, N=25):
         '''
         Input: (optional)
         Number of simulation steps, N
@@ -68,6 +79,8 @@ class Ground_truth():
         image_flat.append(mat.reshape(100,1))
         tmp = np.array([x[-1], y[-1]])
         coord.append(tmp)
+
+        frames = []
         
         # simulation loop
         while i < N:

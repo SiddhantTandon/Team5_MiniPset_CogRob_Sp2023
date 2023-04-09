@@ -1,14 +1,20 @@
 import utils_pset
 import solutions
+import numpy as np
 
 def check_solution(answer, reference, mapping,threshold=0.0001):
 
     gt = utils_pset.Ground_truth()
     for i in range(5,25,5):
-        data = gt.run_program(i)
-        gt = reference(data,mapping)
-        student_answer = answer(data,mapping)
-        if abs(gt-student_answer) > threshold:
+        images, coords, actions, rewards = gt.run_program(N=i)
+        frames =utils_pset.raw_to_frame(images, coords, actions, rewards)
+        gt_answer = reference(frames,mapping)
+        student_answer = answer(frames,mapping)
+        if np.max(np.abs(gt_answer-student_answer)) > threshold:
             return False
     return True
+
+if __name__ == "__main__":
+    mapping = np.arange(200).reshape((2, 100))
+    print(check_solution(solutions.temporal_cohesion_sol, solutions.temporal_cohesion_sol, mapping))
 

@@ -13,7 +13,7 @@ def temporal_cohesion_sol(batch, mapping):
     total_loss_grad = np.zeros(mapping.shape)
     for i in range(0,time_steps-1):
         loss_grad = temporal_loss_gradient(batch[i], batch[i+1], mapping)
-        total_loss_grad += loss_grad.reshape(2,4)
+        total_loss_grad += loss_grad.reshape(mapping.shape)
 
     return total_loss_grad/(time_steps-1)
 
@@ -48,7 +48,7 @@ def proportionality_prior_sol(batch, mapping):
         for j in range(i+1,time_steps - 1):
             if batch[i].action == batch[j].action:
                 loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image, batch[j+1].image, mapping)
-                total_loss_grad += loss_grad.reshape(2, 4)
+                total_loss_grad += loss_grad.reshape(mapping.shape)
 
     return total_loss_grad / (time_steps - 1)
 
@@ -90,7 +90,7 @@ def causality_prior_sol(batch):
             if batch[i].action == batch[j].action and batch[i].reward != batch[j].reward:
                 loss_grad = causal_loss_gradient(batch[i].image, batch[j].image,
                                                 mapping)
-                total_loss_grad += loss_grad.reshape(2, 4)
+                total_loss_grad += loss_grad.reshape(mapping.shape)
 
     return total_loss_grad / (time_steps - 1)
 
@@ -115,7 +115,7 @@ def repeatability_prior_sol(batch, mapping):
             if batch[i].action == batch[j].action:
                 loss_grad = proportional_loss_gradient(batch[i].image, batch[i + 1].image, batch[j].image,
                                                        batch[j + 1].image, mapping)
-                total_loss_grad += loss_grad.reshape(2, 4)
+                total_loss_grad += loss_grad.reshape(mapping.shape)
 
     return total_loss_grad / (time_steps - 1)
 
