@@ -10,9 +10,8 @@ def check_solution(answer, reference, mapping,threshold=0.0001):
         frames =utils_pset.raw_to_frame(images, coords, actions, rewards)
         gt_answer = reference(frames,mapping)
         student_answer = answer(frames,mapping)
-        if np.max(np.abs(gt_answer-student_answer)) > threshold:
-            return False
-    return True
+        assert np.max(np.abs(gt_answer-student_answer)) > threshold
+
 
 if __name__ == "__main__":
     mapping = np.arange(200).reshape((2, 100))
