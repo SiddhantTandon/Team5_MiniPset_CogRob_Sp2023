@@ -1,19 +1,6 @@
 import numpy as np
+from utils_pset import Data_Frame
 
-class Data_Frame:
-
-    def __init__(self, coords, action, reward, image):
-        """
-        Initialize a data frame
-        :param coords: a numpy array of the coordinates of the robot
-        :param action: a string representing the action taken
-        :param reward: an integer representing the reward received
-        :param image: a numpy array of the pixels of the image (flattened)
-        """
-        self.coords = coords
-        self.action = action
-        self.reward = reward
-        self.image = image
 
 def temporal_cohesion_sol(batch, mapping):
     """
@@ -164,3 +151,4 @@ if __name__ == "__main__":
     frame3 = Data_Frame(np.array([2, 1]), 4, 1, image3)
     frame4 = Data_Frame(np.array([2, 4]), 4, 2, image4)
     mapping = np.arange(8).reshape((2, 4))
+

@@ -3,6 +3,21 @@
 
 import numpy as np
 
+class Data_Frame:
+
+    def __init__(self, coords, action, reward, image):
+        """
+        Initialize a data frame
+        :param coords: a numpy array of the coordinates of the robot
+        :param action: a string representing the action taken
+        :param reward: an integer representing the reward received
+        :param image: a numpy array of the pixels of the image (flattened)
+        """
+        self.coords = coords
+        self.action = action
+        self.reward = reward
+        self.image = image
+
 
 class Ground_truth():
     '''
