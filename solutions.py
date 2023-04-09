@@ -74,7 +74,7 @@ def proportional_loss_gradient(s1, s2, s3, s4, mapping):
     return output
 
 
-def causality_prior_sol(batch):
+def causality_prior_sol(batch, mapping):
     """
     computes the gradient causality prior from the batch
     :param batch: a list of Data frames where batch[i] is the data frame from time step i
