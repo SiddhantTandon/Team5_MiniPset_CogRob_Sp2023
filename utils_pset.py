@@ -9,7 +9,7 @@ class Data_Frame:
         """
         Initialize a data frame
         :param coords: a numpy array of the coordinates of the robot
-        :param action: a string representing the action taken
+        :param action: an integer representing the action taken
         :param reward: an integer representing the reward received
         :param image: a numpy array of the pixels of the image (flattened)
         """
