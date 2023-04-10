@@ -1,3 +1,4 @@
+# File that contains reference solutions to the problems, please don't touch the files!
 import numpy as np
 
 temporal_solution5 = np.array([[ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,

@@ -1,7 +1,19 @@
+# Please don't change the contents of this file!
 import utils_pset
-import solutions
 import numpy as np
 import solution_vals
+from IPython.display import display, HTML, clear_output
+
+
+def test_ok():
+    """If execution gets to this point, print out a happy message."""
+    try:
+        from IPython.display import display_html
+        display_html("""<div class="alert alert-success">
+        <strong>Tests passed!!</strong>
+        </div>""", raw=True)
+    except:
+        print("Tests passed!!")
 
 def temporal_sol_check(answer, threshold= 0.001):
     """

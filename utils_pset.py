@@ -1,5 +1,4 @@
-# Author: Siddhant Tandon
-# Date: 4 April 2023
+# File contains steps for creating the simulation based data
 
 import numpy as np
 
