@@ -148,6 +148,39 @@ def repeatability_loss_gradient(s1, s2, s3, s4, mapping):
             output[i,j] = 2*inner*outer*base_causal_loss + causal_losses[i,j]*base_priorish_loss
     return output
 
+def multi_prior_sol(batch, mapping):
+
+    time_steps = len(batch)
+    total_loss_grad = np.zeros(mapping.shape)
+    pairings = 0
+    counter = 0
+    for i in range(0,time_steps-1):
+        if batch[i].action[0] == batch[i].action[1]:
+            counter += 1
+            total_loss_grad += multi_loss_gradient(batch[i].image, batch[i+1].image, mapping)
+
+    return total_loss_grad/counter
+
+
+def multi_loss_gradient(s1, s2, mapping):
+
+    dims = mapping.shape
+    output = np.zeros(dims)
+
+    delta = mapping@s2 - mapping@s1
+
+    deltadelta = delta[0:2] - delta[2:4]
+    squared = np.multiply(deltadelta, deltadelta)
+    expon = -squared[0] - squared[1]
+    for i in range(0,dims[0]):
+        outer = deltadelta[i % 2]
+        for j in range(0, dims[1]):
+            individual = s1[j] - s2[j]
+            output[i,j] = 2*np.exp(expon)*outer*individual
+    return output
+
+
+
 if __name__ == "__main__":
     image1 = np.array([0, 1, 1, 1]).T  # (0,0)
     image2 = np.array([1, 0, 1, 1]).T  # (1,0)
@@ -157,5 +190,11 @@ if __name__ == "__main__":
     frame2 = Data_Frame(np.array([2, 3]), 4, 2, image2)
     frame3 = Data_Frame(np.array([2, 1]), 4, 1, image3)
     frame4 = Data_Frame(np.array([2, 4]), 4, 2, image4)
-    mapping = np.arange(8).reshape((2, 4))
+    multiframe1 = Data_Frame(np.array([1, 2]), (4,4), 1, image1)
+    multiframe2 = Data_Frame(np.array([1, 2]), (4,4), 1, image2)
+    mapping = np.arange(16).reshape((4, 4))
+    mapping[0,2] = 0
+    mapping[0,1] = 0
+    print(mapping)
+    print(multi_prior_sol([multiframe1, multiframe2], mapping))
 
